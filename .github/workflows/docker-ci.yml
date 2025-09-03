@@ -43,6 +43,12 @@ jobs:
           cd server
           composer install --no-interaction --prefer-dist
 
+      - name: Set Laravel APP_KEY
+        run: |
+          cd server
+          if [ ! -f .env ]; then cp .env.example .env; fi
+          php artisan key:generate
+
       - name: Install React dependencies
         run: |
           cd client
