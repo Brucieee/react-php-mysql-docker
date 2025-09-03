@@ -95,11 +95,11 @@ jobs:
       - name: Build & Push React Docker image
         run: |
           docker build -t react-php-mysql-app:latest ./client
-          docker tag react-php-mysql-app:latest ${{ steps.login-ecr.outputs.registry }}/react-php-mysql-app:latest
-          docker push ${{ steps.login-ecr.outputs.registry }}/react-php-mysql-app:latest
+          docker tag react-php-mysql-app:latest ${{ steps.login-ecr.outputs.registry }}/react-php-mysql-app:react
+          docker push ${{ steps.login-ecr.outputs.registry }}/react-php-mysql-app:react
 
       - name: Build & Push Laravel Docker image
         run: |
-          docker build -t laravel-app:latest ./server
-          docker tag laravel-app:latest ${{ steps.login-ecr.outputs.registry }}/laravel-app:latest
-          docker push ${{ steps.login-ecr.outputs.registry }}/laravel-app:latest
+          docker build -t react-php-mysql-app:latest ./server
+          docker tag react-php-mysql-app:latest ${{ steps.login-ecr.outputs.registry }}/react-php-mysql-app:laravel
+          docker push ${{ steps.login-ecr.outputs.registry }}/react-php-mysql-app:laravel
