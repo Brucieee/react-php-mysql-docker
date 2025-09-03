@@ -1,4 +1,4 @@
-name: Docker CI
+name: Docker CI & Push to ECR
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     services:
@@ -77,3 +77,29 @@ jobs:
         run: |
           cd client
           npm run build
+
+      # ----------------------------
+      # Docker build & push to ECR
+      # ----------------------------
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & Push React Docker image
+        run: |
+          docker build -t react-php-mysql-app:latest ./client
+          docker tag react-php-mysql-app:latest ${{ steps.login-ecr.outputs.registry }}/react-php-mysql-app:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/react-php-mysql-app:latest
+
+      - name: Build & Push Laravel Docker image
+        run: |
+          docker build -t laravel-app:latest ./server
+          docker tag laravel-app:latest ${{ steps.login-ecr.outputs.registry }}/laravel-app:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/laravel-app:latest
