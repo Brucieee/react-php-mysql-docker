@@ -31,12 +31,25 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, bcmath, pdo_mysql
+          ini-values: post_max_size=256M, upload_max_filesize=256M
+          coverage: none
+          tools: composer
+          composer-cache: true
+
+      - name: Wait for MySQL
+        run: |
+          for i in $(seq 1 20); do
+            mysqladmin ping -h127.0.0.1 -uroot -proot &> /dev/null && break
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
 
       - name: Install Laravel dependencies
         run: |
