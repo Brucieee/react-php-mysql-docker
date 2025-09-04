@@ -29,6 +29,15 @@ function TaskList() {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/tasks/${id}`);
+      fetchTasks(); // refresh list
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Tasks</h1>
@@ -53,8 +62,16 @@ function TaskList() {
       {/* Task list */}
       <ul className="space-y-2">
         {tasks.map(task => (
-          <li key={task.id} className="p-3 rounded bg-gray-100">
-            {task.title} {task.completed ? "✅" : "❌"}
+          <li key={task.id} className="p-3 rounded bg-gray-100 flex justify-between items-center">
+            <span>
+              {task.title} {task.completed ? "✅" : "❌"}
+            </span>
+            <button
+              onClick={() => handleDelete(task.id)}
+              className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
