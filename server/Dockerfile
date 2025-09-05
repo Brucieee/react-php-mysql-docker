@@ -8,17 +8,14 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer first (for caching)
-COPY composer.json composer.lock ./
-
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Install PHP dependencies (no dev, optimized)
-RUN composer install --no-dev --optimize-autoloader
-
-# Now copy the rest of the app
+# Copy app files
 COPY . .
+
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
 # Expose port
 EXPOSE 8000
