@@ -10,14 +10,17 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /var/www/html
 
-# Install Composer (from official Composer image)
+# Install Composer from official image
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Copy app files
 COPY . .
 
+# Allow Composer to run as root (needed in Docker)
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Install PHP dependencies (optimized, no dev)
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
 # Expose port
 EXPOSE 8000
