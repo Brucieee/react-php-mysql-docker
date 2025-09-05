@@ -1,20 +1,22 @@
 FROM php:8.2-cli
 
-# Install system dependencies
+# Install system dependencies + CA certs
 RUN apt-get update && apt-get install -y \
     zip unzip curl git libzip-dev libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo_mysql mbstring bcmath
+    ca-certificates \
+    && docker-php-ext-install pdo_mysql mbstring bcmath \
+    && update-ca-certificates
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Install Composer
+# Install Composer (from official Composer image)
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Copy app files
 COPY . .
 
-# Install PHP dependencies
+# Install PHP dependencies (optimized, no dev)
 RUN composer install --no-dev --optimize-autoloader
 
 # Expose port
