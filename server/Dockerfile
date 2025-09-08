@@ -18,9 +18,10 @@ COPY . .
 
 # Allow Composer to run as root (needed in Docker)
 ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_DISABLE_XDEBUG_WARN=1
 
-# Install PHP dependencies (optimized, no dev)
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+# Install PHP dependencies (optimized, no dev, ignore platform reqs for Docker builds)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --ignore-platform-reqs
 
 # Expose port
 EXPOSE 8000
