@@ -7,24 +7,20 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo_mysql mbstring bcmath \
     && update-ca-certificates
 
+# Set working directory
 WORKDIR /var/www/html
 
-# Install Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
-
-# Copy composer files first (for Docker caching)
+# Copy only composer files first (cache layer, optional)
 COPY composer.json composer.lock ./
 
-# Allow Composer to run as root
-ENV COMPOSER_ALLOW_SUPERUSER=1
-ENV COMPOSER_DISABLE_XDEBUG_WARN=1
+# Copy vendor folder (dependencies installed locally)
+COPY vendor/ ./vendor/
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress --ignore-platform-reqs
-
-# Copy rest of the app
+# Copy the rest of the application
 COPY . .
 
+# Expose Laravel dev server port
 EXPOSE 8000
 
+# Start Laravel development server
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
