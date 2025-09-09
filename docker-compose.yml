@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     volumes:
       - ./server:/var/www/html
+      - vendor:/var/www/html/vendor
     depends_on:
       - db
     environment:
@@ -19,6 +20,7 @@ services:
       DB_DATABASE: react_php_app
       DB_USERNAME: root
       DB_PASSWORD: root
+    command: sh -lc "composer install --no-interaction --prefer-dist --no-progress && php artisan serve --host=0.0.0.0 --port=8000"
 
   db:
     image: mysql:8.0
@@ -48,3 +50,4 @@ services:
 
 volumes:
   db_data:
+  vendor:

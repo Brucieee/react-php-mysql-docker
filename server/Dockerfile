@@ -10,14 +10,17 @@ RUN apt-get update && apt-get install -y \
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy only composer files first (cache layer, optional)
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Copy composer files (cache layer)
 COPY composer.json composer.lock ./
 
-# Copy vendor folder (dependencies installed locally)
-COPY vendor/ ./vendor/
-
-# Copy the rest of the application
+# Copy application code (so artisan exists)
 COPY . .
+
+# Install PHP dependencies (now artisan is available)
+RUN composer install --no-dev --optimize-autoloader
 
 # Expose Laravel dev server port
 EXPOSE 8000
